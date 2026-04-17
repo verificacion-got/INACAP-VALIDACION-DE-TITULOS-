@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validación de Certificados - INACAP</title>
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        /* 1. Encabezado con LOGO AGRANDADO */
+        .header-simple {
+            background-color: #ffffff;
+            padding: 20px 40px; /* Más espacio */
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+        }
+
+        .header-simple img {
+            height: 60px; /* Logo más grande (antes 35px) */
+            width: auto;
+            margin-right: 15px;
+        }
+
+        /* 2. Sección principal */
+        .hero-section {
+            position: relative;
+            height: 450px;
+            background-image: url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=2070&auto=format&fit&crop');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 3. El filtro de color oscuro */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 42, 85, 0.75);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .hero-section h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+
+        /* 4. Estilos del reCAPTCHA */
+        .captcha-container {
+            background-color: white;
+            border: 1px solid #d3d3d3;
+            border-radius: 3px;
+            width: 300px;
+            height: 74px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            user-select: none;
+            cursor: pointer;
+            margin: 0 auto;
+            color: #000;
+            position: relative;
+        }
+
+        .captcha-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #c1c1c1;
+            border-radius: 2px;
+            background-color: white;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .captcha-label {
+            font-family: Roboto, Arial, sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            color: #000;
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        .captcha-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+        }
+
+        .recaptcha-icon {
+            width: 24px;
+            height: 24px;
+            background-image: url('https://www.gstatic.com/recaptcha/api2/logo_48.png');
+            background-size: cover;
+            opacity: 0.6;
+        }
+        
+        .recaptcha-text {
+            font-size: 10px;
+            color: #555;
+            margin-top: 2px;
+            text-align: center;
+            line-height: 1;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4285f4;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+            display: none; 
+        }
+
+        .checkmark {
+            color: #009e55;
+            font-size: 26px;
+            display: none;
+            line-height: 0;
+            position: relative;
+            top: -2px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 5. Ventana Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .modal-content h3 {
+            color: #28a745;
+            font-size: 1.5rem;
+            margin-top: 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+        }
+
+        /* 6. Tabla de resultados */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table td {
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        table td:first-child {
+            font-weight: bold;
+            background-color: #f1f1f1;
+            width: 40%;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header-simple">
+        <img src="https://www.inacap.cl/web/template-aplicaciones/img/logo-inacap.png" alt="Logo INACAP">
+    </header>
+
+    <main class="hero-section">
+        <div class="overlay">
+            <h1>Validación de Certificados</h1>
+            
+            <div class="captcha-container" onclick="iniciarValidacion(this)">
+                <div class="captcha-checkbox">
+                    <div class="spinner"></div>
+                    <div class="checkmark">✔</div>
+                </div>
+                <div class="captcha-label">No soy un robot</div>
+                <div class="captcha-logo">
+                    <div class="recaptcha-icon"></div>
+                    <div class="recaptcha-text">reCAPTCHA</div>
+                    <div style="font-size: 8px; color: #555; margin-top: 2px;">Privacidad - Términos</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="modal-resultado" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-button" id="closeButton">&times;</span>
+            
+            <h3>Certificado Válido</h3>
+            
+            <table>
+                <tbody>
+                    <tr>
+                        <td>Nombre del Participante</td>
+                        <td id="data-nombre">...</td>
+                    </tr>
+                    <tr>
+                        <td>Id Participante (RUT)</td>
+                        <td id="data-id">...</td>
+                    </tr>
+                    <tr>
+                        <td>Nombre de la Carrera</td> 
+                        <td id="data-carrera-valor">...</td>
+                    </tr>
+                    <tr>
+                        <td>Sede</td>
+                        <td id="data-sede">...</td>
+                    </tr>
+                    <tr>
+                        <td>Modalidad</td>
+                        <td id="data-modalidad">...</td>
+                    </tr>
+                    <tr>
+                        <td>Nota Final</td>
+                        <td id="data-nota" style="font-weight: bold; color: #002a55;">...</td>
+                    </tr>
+                    <tr>
+                        <td>Fecha de Término</td>
+                        <td id="data-fecha">...</td>
+                    </tr>
+                    <tr>
+                        <td>Estado</td>
+                        <td id="data-estado" style="color: #28a745; font-weight: bold;">...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('modal-resultado');
+        const closeButton = document.getElementById('closeButton');
+        let validando = false;
+
+        function showModalWithData() {
+            // Datos del certificado
+            document.getElementById('data-nombre').textContent = 'FRANCISCO JAVIER MUÑOZ CONTE';
+            document.getElementById('data-id').textContent = '15.474.923-3';
+            document.getElementById('data-carrera-valor').textContent = 'INGENIERÍA EN AUTOMATIZACIÓN Y CONTROL INDUSTRIAL';
+            document.getElementById('data-sede').textContent = 'RENCA';
+            document.getElementById('data-modalidad').textContent = 'VESPERTINA';
+            document.getElementById('data-nota').textContent = '6,2';
+            document.getElementById('data-fecha').textContent = '20 Diciembre 2016';
+            document.getElementById('data-estado').textContent = 'APROBADO';
+
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        function iniciarValidacion(elemento) {
+            if (validando) return;
+            validando = true;
+
+            const spinner = elemento.querySelector('.spinner');
+            const checkmark = elemento.querySelector('.checkmark');
+
+            spinner.style.display = 'block';
+
+            setTimeout(() => {
+                spinner.style.display = 'none';
+                checkmark.style.display = 'block';
+
+                setTimeout(() => {
+                    showModalWithData();
+                }, 600);
+
+            }, 1500);
+        }
+
+        closeButton.addEventListener('click', closeModal);
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+    </script>
+
+</body>
+</html>
