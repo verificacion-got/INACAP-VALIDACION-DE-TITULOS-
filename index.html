@@ -12,10 +12,9 @@
             background-color: #f4f4f4;
         }
 
-        /* 1. Encabezado con LOGO AGRANDADO */
         .header-simple {
             background-color: #ffffff;
-            padding: 20px 40px; /* Más espacio */
+            padding: 20px 40px;
             border-bottom: 1px solid #e0e0e0;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             display: flex;
@@ -23,12 +22,11 @@
         }
 
         .header-simple img {
-            height: 60px; /* Logo más grande (antes 35px) */
+            height: 60px;
             width: auto;
             margin-right: 15px;
         }
 
-        /* 2. Sección principal */
         .hero-section {
             position: relative;
             height: 450px;
@@ -40,7 +38,6 @@
             justify-content: center;
         }
 
-        /* 3. El filtro de color oscuro */
         .overlay {
             position: absolute;
             top: 0;
@@ -63,9 +60,9 @@
             margin-bottom: 30px;
         }
 
-        /* 4. Estilos del reCAPTCHA */
+        /* reCAPTCHA Custom Style */
         .captcha-container {
-            background-color: white;
+            background-color: #f9f9f9;
             border: 1px solid #d3d3d3;
             border-radius: 3px;
             width: 300px;
@@ -78,7 +75,6 @@
             cursor: pointer;
             margin: 0 auto;
             color: #000;
-            position: relative;
         }
 
         .captcha-checkbox {
@@ -91,12 +87,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
 
         .captcha-label {
             font-family: Roboto, Arial, sans-serif;
             font-size: 14px;
-            font-weight: 400;
             color: #000;
             flex-grow: 1;
             text-align: left;
@@ -106,7 +102,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             margin-left: 10px;
         }
 
@@ -115,34 +110,29 @@
             height: 24px;
             background-image: url('https://www.gstatic.com/recaptcha/api2/logo_48.png');
             background-size: cover;
-            opacity: 0.6;
+            opacity: 0.7;
         }
         
         .recaptcha-text {
-            font-size: 10px;
+            font-size: 8px;
             color: #555;
             margin-top: 2px;
-            text-align: center;
-            line-height: 1;
         }
 
         .spinner {
             border: 3px solid #f3f3f3;
             border-top: 3px solid #4285f4;
             border-radius: 50%;
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             animation: spin 1s linear infinite;
             display: none; 
         }
 
         .checkmark {
             color: #009e55;
-            font-size: 26px;
+            font-size: 22px;
             display: none;
-            line-height: 0;
-            position: relative;
-            top: -2px;
         }
 
         @keyframes spin {
@@ -150,7 +140,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* 5. Ventana Modal */
+        /* Modal */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -158,10 +148,10 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(0, 0, 0, 0.7);
             align-items: center;
             justify-content: center;
-            z-index: 1000;
+            z-index: 9999;
         }
 
         .modal-content {
@@ -170,48 +160,40 @@
             border-radius: 8px;
             width: 90%;
             max-width: 600px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             position: relative;
         }
 
         .modal-content h3 {
             color: #28a745;
-            font-size: 1.5rem;
             margin-top: 0;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 15px;
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 10px;
         }
 
         .close-button {
             position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 2rem;
-            font-weight: bold;
-            color: #aaa;
+            top: 10px;
+            right: 15px;
+            font-size: 1.8rem;
+            color: #333;
             cursor: pointer;
         }
 
-        /* 6. Tabla de resultados */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         table td {
-            padding: 12px 15px;
-            border: 1px solid #e0e0e0;
+            padding: 10px;
+            border: 1px solid #ddd;
             font-size: 14px;
         }
 
-        table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
         table td:first-child {
+            background-color: #f4f4f4;
             font-weight: bold;
-            background-color: #f1f1f1;
             width: 40%;
         }
     </style>
@@ -228,14 +210,13 @@
             
             <div class="captcha-container" onclick="iniciarValidacion(this)">
                 <div class="captcha-checkbox">
-                    <div class="spinner"></div>
-                    <div class="checkmark">✔</div>
+                    <div class="spinner" id="spinner"></div>
+                    <div class="checkmark" id="checkmark">✔</div>
                 </div>
                 <div class="captcha-label">No soy un robot</div>
                 <div class="captcha-logo">
                     <div class="recaptcha-icon"></div>
                     <div class="recaptcha-text">reCAPTCHA</div>
-                    <div style="font-size: 8px; color: #555; margin-top: 2px;">Privacidad - Términos</div>
                 </div>
             </div>
         </div>
@@ -244,43 +225,17 @@
     <div id="modal-resultado" class="modal-overlay">
         <div class="modal-content">
             <span class="close-button" id="closeButton">&times;</span>
-            
             <h3>Certificado Válido</h3>
-            
             <table>
                 <tbody>
-                    <tr>
-                        <td>Nombre del Participante</td>
-                        <td id="data-nombre">...</td>
-                    </tr>
-                    <tr>
-                        <td>Id Participante (RUT)</td>
-                        <td id="data-id">...</td>
-                    </tr>
-                    <tr>
-                        <td>Nombre de la Carrera</td> 
-                        <td id="data-carrera-valor">...</td>
-                    </tr>
-                    <tr>
-                        <td>Sede</td>
-                        <td id="data-sede">...</td>
-                    </tr>
-                    <tr>
-                        <td>Modalidad</td>
-                        <td id="data-modalidad">...</td>
-                    </tr>
-                    <tr>
-                        <td>Nota Final</td>
-                        <td id="data-nota" style="font-weight: bold; color: #002a55;">...</td>
-                    </tr>
-                    <tr>
-                        <td>Fecha de Término</td>
-                        <td id="data-fecha">...</td>
-                    </tr>
-                    <tr>
-                        <td>Estado</td>
-                        <td id="data-estado" style="color: #28a745; font-weight: bold;">...</td>
-                    </tr>
+                    <tr><td>Nombre del Participante</td><td id="data-nombre"></td></tr>
+                    <tr><td>Id Participante (RUT)</td><td id="data-id"></td></tr>
+                    <tr><td>Nombre de la Carrera</td><td id="data-carrera"></td></tr>
+                    <tr><td>Sede</td><td id="data-sede"></td></tr>
+                    <tr><td>Modalidad</td><td id="data-modalidad"></td></tr>
+                    <tr><td>Nota Final</td><td id="data-nota"></td></tr>
+                    <tr><td>Fecha de Término</td><td id="data-fecha"></td></tr>
+                    <tr><td>Estado</td><td id="data-estado"></td></tr>
                 </tbody>
             </table>
         </div>
@@ -292,50 +247,46 @@
         let validando = false;
 
         function showModalWithData() {
-            // Datos del certificado
+            // CORRECCIÓN: Se cerraron correctamente las comillas en los strings
             document.getElementById('data-nombre').textContent = 'MARCELO GUILLERMO LISERA LISERA';
             document.getElementById('data-id').textContent = '12.803.499-4';
-            document.getElementById('data-carrera-valor').textContent = 'TÉCNICO EN CONSTRUCCIÓN;
+            document.getElementById('data-carrera').textContent = 'TÉCNICO EN CONSTRUCCIÓN';
             document.getElementById('data-sede').textContent = 'LA SERENA';
             document.getElementById('data-modalidad').textContent = 'VESPERTINA';
             document.getElementById('data-nota').textContent = '5,9';
             document.getElementById('data-fecha').textContent = '19 Diciembre 2014';
             document.getElementById('data-estado').textContent = 'APROBADO';
+            document.getElementById('data-estado').style.color = "#28a745";
 
             modal.style.display = 'flex';
-        }
-
-        function closeModal() {
-            modal.style.display = 'none';
         }
 
         function iniciarValidacion(elemento) {
             if (validando) return;
             validando = true;
 
-            const spinner = elemento.querySelector('.spinner');
-            const checkmark = elemento.querySelector('.checkmark');
+            const spinner = document.getElementById('spinner');
+            const checkmark = document.getElementById('checkmark');
 
             spinner.style.display = 'block';
 
+            // Simulación de carga
             setTimeout(() => {
                 spinner.style.display = 'none';
                 checkmark.style.display = 'block';
 
                 setTimeout(() => {
                     showModalWithData();
-                }, 600);
-
+                    validando = false; // Resetear para permitir abrir de nuevo si se cierra
+                }, 500);
             }, 1500);
         }
 
-        closeButton.addEventListener('click', closeModal);
-        window.onclick = function(event) {
-            if (event.target === modal) {
-                closeModal();
-            }
+        closeButton.onclick = () => modal.style.display = 'none';
+        
+        window.onclick = (event) => {
+            if (event.target === modal) modal.style.display = 'none';
         };
     </script>
-
 </body>
 </html>
